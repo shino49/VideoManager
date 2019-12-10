@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29519.181
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoManager", "VideoManager\VideoManager.csproj", "{4943E2F6-0871-4147-B44F-90F582244282}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Video_Spyder", "Video_Spyder\Video_Spyder.csproj", "{7D78D658-0ED0-46FF-9C6F-10E2DD325979}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4943E2F6-0871-4147-B44F-90F582244282}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4943E2F6-0871-4147-B44F-90F582244282}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4943E2F6-0871-4147-B44F-90F582244282}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4943E2F6-0871-4147-B44F-90F582244282}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D78D658-0ED0-46FF-9C6F-10E2DD325979}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D78D658-0ED0-46FF-9C6F-10E2DD325979}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D78D658-0ED0-46FF-9C6F-10E2DD325979}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D78D658-0ED0-46FF-9C6F-10E2DD325979}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7936193B-9FB3-45E4-89FB-3634046FCBC9}
+	EndGlobalSection
+EndGlobal
