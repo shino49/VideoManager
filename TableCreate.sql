@@ -38,7 +38,7 @@ create table movie (
 
 create table photo (
     id int not null identity(1,1),
-    douban_id varchar(16),
+    douban_id varchar(16) foreign key references movie,
     type tinyint,
     photo_id varchar(16),
     primary key(id)
