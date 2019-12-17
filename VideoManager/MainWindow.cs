@@ -7,15 +7,45 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Data.SqlClient;
 
 namespace VideoManager
 {
+    public enum claims
+    {
+        guest,
+        user,
+        admin
+    };
+    public struct account
+    {
+        public bool isLogin;
+        public string username;
+        public System.IO.Stream avater;
+        public int userid;
+        public claims claim;
+        public account(bool isLogin)
+        {
+            this.isLogin = isLogin;
+            this.username = null;
+            this.avater = null;
+            this.userid = -1;
+            this.claim = claims.guest;
+        }
+    };
+
     public partial class MainWindow : Form
     {
+        public static SqlConnection mycon;
         public MediaCargo videocargo;
+        public static account myaccount;
+
         public MainWindow()
         {
             InitializeComponent();
+            string constr = @"Data Source = DESKTOP - PF69SJV\SQLEXPRESS; Initial Catalog = video_manager; Integrated Security = True";
+            mycon = new SqlConnection(constr);
+            myaccount = new account(false);
             videocargo = new MediaCargo();
             
         }

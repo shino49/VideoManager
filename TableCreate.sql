@@ -6,8 +6,9 @@ create table appuser(
 	username varchar(40) unique not null,
 	passwd char(32),
 	claims varchar(5) not null
-		check(claims in ('admin','user','guest')),
-	avator image
+		check(claims in ('admin','user')),
+	avator image,
+	loginnum int
 );
 
 insert into appuser (username,passwd,claims)
@@ -47,8 +48,7 @@ create table comment(
 	commentid int not null identity(1,1) primary key,
 	userid int not null foreign key references appuser,
 	douban_id varchar(16) not null foreign key references movie,
-	content text
-		check(count(content) <= 140),
+	content varchar(280),
 	pubtime timestamp
 );
 

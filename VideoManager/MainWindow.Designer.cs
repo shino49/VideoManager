@@ -52,7 +52,7 @@
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(100, 52);
             this.button3.TabIndex = 2;
-            this.button3.Text = "button3";
+            this.button3.Text = "后台管理";
             this.button3.UseVisualStyleBackColor = true;
             // 
             // button1
