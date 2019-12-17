@@ -13,7 +13,7 @@ namespace VideoManager
 {
     public partial class loginorsign : Form
     {
-        string loginsql = "select userid from appuser where username=@name and passwd=@pwd;";
+        string loginsql = "select userid,username,avator,claims from appuser where username=@name and passwd=@pwd;";
         public loginorsign()
         {
             InitializeComponent();
@@ -104,14 +104,31 @@ namespace VideoManager
 
         private void button1_Click(object sender, EventArgs e)
         {
-            if((this.textBox1.Text !="") && (this.textBox2.Text != "") && (this.textBox1.Enabled && this.textBox2.Enabled))
+            SqlParameter name = new SqlParameter("@name", SqlDbType.VarChar, 40);
+            SqlParameter pwd = new SqlParameter("@pwd", SqlDbType.Char, 32);
+            if ((this.textBox1.Text !="") && (this.textBox2.Text != ""))
             {
-                SqlParameter name = new SqlParameter("@name", SqlDbType.VarChar, 40);
-                SqlParameter pwd = new SqlParameter("@pwd", SqlDbType.Char, 32);
+                name.Value = this.textBox1.Text;
+                pwd.Value = this.textBox2.Text;
                 if (this.radioButton1.Checked)
                 {
                     SqlCommand mycom = new SqlCommand(loginsql, MainWindow.mycon);
-                    mycom.Parameters.Add("@name",SqlDbType.VarChar,40)
+                    mycom.Parameters.Add(name);
+                    mycom.Parameters.Add(pwd);
+                    MainWindow.mycon.Open();
+                    {
+                        SqlDataReader myReader = mycom.ExecuteReader();
+                        while (myReader.Read())//判断是否有数据
+                        {
+                            if(myReader["username"].ToString() == this.textBox1.Text)
+                            {
+                                MainWindow.myaccount.username = myReader["username"].ToString();
+                                MainWindow.myaccount.isLogin = true;
+                                MainWindow.myaccount.userid = 
+                            }
+                        }
+                    }
+                    MainWindow.mycon.Close();
                 }
             }
         }
