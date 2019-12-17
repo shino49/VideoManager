@@ -8,12 +8,14 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.SqlClient;
+using System.Security.Cryptography;
 
 namespace VideoManager
 {
     public partial class loginorsign : Form
     {
-        string loginsql = "select userid,username,avator,claims from appuser where username=@name and passwd=@pwd;";
+        string loginsql = "select userid,username,avator,claims,loginnum from appuser where username=@name and passwd=@pwd;";
+        string signupsql = "insert into appuser (username,passwd,claims,loginnum) values(@name,@pwd,'user',0)";
         public loginorsign()
         {
             InitializeComponent();
@@ -22,7 +24,7 @@ namespace VideoManager
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            if (this.radioButton1.Checked && this.textBox1.Text!="")
+            if (this.radioButton3.Checked && this.textBox1.Text!="")
             {
                 SqlCommand mycom = new SqlCommand("username_not_repeat", MainWindow.mycon);
 
@@ -32,12 +34,13 @@ namespace VideoManager
                 mycom.Parameters.Add(username);
 
                 SqlParameter usercount = new SqlParameter("@rt_isRep",SqlDbType.Int);
-                mycom.Parameters.Add(usercount);
                 usercount.Direction = ParameterDirection.Output;
+                mycom.Parameters.Add(usercount);
+                
 
                 MainWindow.mycon.Open();
                 {
-                    mycom.BeginExecuteReader();
+                    mycom.ExecuteNonQuery();
                 }
                 MainWindow.mycon.Close();
                 if ((int)usercount.Value != 0)
@@ -87,7 +90,7 @@ namespace VideoManager
 
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
-            if(this.textBox1.Text != "")
+            if(this.radioButton3.Checked && this.textBox1.Text != "")
             {
                 if (this.textBox2.Text.Length < 8)
                 {
@@ -102,38 +105,118 @@ namespace VideoManager
             }
         }
 
+
+        public static string GetMd5Hash(String input)
+        {
+            if (input == null)
+            {
+                return null;
+            }
+
+            MD5 md5Hash = MD5.Create();
+
+            // 将输入字符串转换为字节数组并计算哈希数据
+            byte[] data = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(input));
+
+            // 创建一个 Stringbuilder 来收集字节并创建字符串
+            StringBuilder sBuilder = new StringBuilder();
+
+            // 循环遍历哈希数据的每一个字节并格式化为十六进制字符串
+            for (int i = 0; i < data.Length; i++)
+            {
+                sBuilder.Append(data[i].ToString("x2"));
+            }
+
+            // 返回十六进制字符串
+            return sBuilder.ToString();
+        }
+
         private void button1_Click(object sender, EventArgs e)
         {
             SqlParameter name = new SqlParameter("@name", SqlDbType.VarChar, 40);
             SqlParameter pwd = new SqlParameter("@pwd", SqlDbType.Char, 32);
             if ((this.textBox1.Text !="") && (this.textBox2.Text != ""))
             {
-                name.Value = this.textBox1.Text;
-                pwd.Value = this.textBox2.Text;
+                name.Value = this.textBox1.Text.Trim();
+                pwd.Value = GetMd5Hash(this.textBox2.Text.Trim());
                 if (this.radioButton1.Checked)
                 {
                     SqlCommand mycom = new SqlCommand(loginsql, MainWindow.mycon);
                     mycom.Parameters.Add(name);
                     mycom.Parameters.Add(pwd);
-                    MainWindow.mycon.Open();
+                    try 
                     {
-                        SqlDataReader myReader = mycom.ExecuteReader();
-                        while (myReader.Read())//判断是否有数据
+                        MainWindow.mycon.Open();
                         {
-                            if(myReader["username"].ToString() == this.textBox1.Text)
+                            SqlDataReader myReader = mycom.ExecuteReader();
+                            while (myReader.Read())//判断是否有数据
                             {
-                                MainWindow.myaccount.username = myReader["username"].ToString();
-                                MainWindow.myaccount.isLogin = true;
-                                MainWindow.myaccount.userid = (int)myReader["userid"];
-                                if (myReader["claims"].ToString() == "admin")
-                                    MainWindow.myaccount.claim = claims.admin;
-                                else
-                                    MainWindow.myaccount.claim = claims.user;
+                                if (myReader["username"].ToString() == this.textBox1.Text)
+                                {
+                                    MainWindow.myaccount.username = myReader["username"].ToString();
+                                    MainWindow.myaccount.isLogin = true;
+                                    MainWindow.myaccount.userid = (int)myReader["userid"];
+                                    if (myReader["claims"].ToString() == "admin")
+                                        MainWindow.myaccount.claim = claims.admin;
+                                    else
+                                        MainWindow.myaccount.claim = claims.user;
+                                    if (myReader["avator"].GetType() != typeof(System.DBNull))
+                                        MainWindow.myaccount.avater = (Byte[])myReader["avator"];
+                                    SqlCommand mycommnum = new SqlCommand("update appuser set loginnum = "+ ((int)(myReader["loginnum"])+1).ToString()+";", MainWindow.mycon);
+                                    MainWindow.mycon.Close();
+                                    this.Close();
+                                    return;
+                                }
                             }
                         }
+                        MainWindow.mycon.Close();
+                        MessageBox.Show("用户名或密码错误");
+                        return;
                     }
-                    MainWindow.mycon.Close();
+                    catch (Exception ex)
+                    {
+                        MainWindow.mycon.Close();
+                        MessageBox.Show("error" + ex.ToString()) ;
+                        return;
+                    }
+                    
                 }
+                else if (this.radioButton3.Checked)
+                {
+                    SqlCommand mycom = new SqlCommand(signupsql, MainWindow.mycon);
+                    mycom.Parameters.Add(name);
+                    mycom.Parameters.Add(pwd);
+                    try
+                    {
+                        MainWindow.mycon.Open();
+                        {
+                            mycom.ExecuteNonQuery();
+                        }
+                        MainWindow.mycon.Close();
+                        MessageBox.Show("注册成功");
+                        this.radioButton1.Checked = true;
+                        return;
+                    }
+                    catch
+                    {
+                        MainWindow.mycon.Close();
+                        MessageBox.Show("注册失败");
+                        return;
+                    }
+
+                }
+            }
+            else if(this.radioButton2.Checked == true)
+            {
+                MainWindow.myaccount.username = "guest";
+                MainWindow.myaccount.isLogin = true;
+                MainWindow.myaccount.userid = 0;
+                MainWindow.myaccount.claim = claims.guest;
+                //MainWindow.myaccount.avater = ;
+
+                MessageBox.Show("作为游客登录");
+                this.Close();
+                return;
             }
         }
     }

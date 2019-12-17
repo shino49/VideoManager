@@ -21,7 +21,7 @@ namespace VideoManager
     {
         public bool isLogin;
         public string username;
-        public System.IO.Stream avater;
+        public Byte[] avater;
         public int userid;
         public claims claim;
         public account(bool isLogin)
@@ -40,15 +40,19 @@ namespace VideoManager
         public MediaCargo videocargo;
         public static account myaccount;
 
-        public MainWindow()
+        static MainWindow()
         {
-            InitializeComponent();
-            string constr = @"Data Source = DESKTOP - PF69SJV\SQLEXPRESS; Initial Catalog = video_manager; Integrated Security = True";
+            string constr = @"Data Source = DESKTOP-PF69SJV\SQLEXPRESS; Initial Catalog = video_manager; Integrated Security = True";
             mycon = new SqlConnection(constr);
             myaccount = new account(false);
+        }
+        public MainWindow()
+        {
+            InitializeComponent();     
             videocargo = new MediaCargo();
             
         }
+
 
         private void MainWindow_Load(object sender, EventArgs e)
         {
@@ -70,6 +74,30 @@ namespace VideoManager
             }
             else
                 return;
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+            if (!myaccount.isLogin)
+            {
+                (new loginorsign()).ShowDialog();
+                if (myaccount.isLogin)
+                {
+                    this.label1.Text = "ID: " + myaccount.userid;
+                    this.label2.Text = "用户名: " + myaccount.username;
+                    if (myaccount.avater != null)
+                    {
+                        System.IO.MemoryStream ims = new System.IO.MemoryStream(myaccount.avater);
+                        this.pictureBox1.BackgroundImage = Image.FromStream(ims);
+                    }
+                }
+                return;
+            }
+            else
+            {
+
+            }
+
         }
     }
 }
