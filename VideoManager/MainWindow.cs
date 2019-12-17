@@ -31,5 +31,15 @@ namespace VideoManager
         {
             this.groupBox1.Controls.Add(videocargo);
         }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("是否关闭？", "Confirm Message", MessageBoxButtons.OKCancel) == DialogResult.OK)
+            {
+                Application.Exit();
+            }
+            else
+                return;
+        }
     }
 }
