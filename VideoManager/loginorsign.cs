@@ -124,7 +124,11 @@ namespace VideoManager
                             {
                                 MainWindow.myaccount.username = myReader["username"].ToString();
                                 MainWindow.myaccount.isLogin = true;
-                                MainWindow.myaccount.userid = 
+                                MainWindow.myaccount.userid = (int)myReader["userid"];
+                                if (myReader["claims"].ToString() == "admin")
+                                    MainWindow.myaccount.claim = claims.admin;
+                                else
+                                    MainWindow.myaccount.claim = claims.user;
                             }
                         }
                     }
